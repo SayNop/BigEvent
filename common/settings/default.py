@@ -17,6 +17,11 @@ class DefaultConfig(object):
     SQLALCHEMY_TRACK_MODIFICATIONS = False  # 追踪数据的修改信号
     SQLALCHEMY_ECHO = True
 
+    # JWT
+    JWT_SECRET = 'Hty5fLbX7oyVq3Iu9v82@+YW1-8z*UvRnYTt4P6fdXc'
+    JWT_EXPIRY_HOURS = 2
+    JWT_REFRESH_DAYS = 14
+
     # CORS
     # TODO 调试后要修改
     CORS_ORIGINS = '*'
