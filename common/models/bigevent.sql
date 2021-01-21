@@ -41,7 +41,7 @@ CREATE TABLE `tb_article` (
   `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   `status` tinyint(1) NOT NULL DEFAULT '0' COMMENT '文章状态，0-草稿，1-已发布',
-  `is_delete` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否删除：0-未删除、1-已删除、2-不可删除',
+  `is_delete` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否删除：0-未删除、1-已删除',
   PRIMARY KEY (`article_id`),
   KEY `user_id` (`user_id`),
   KEY `article_status` (`status`)

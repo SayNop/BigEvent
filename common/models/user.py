@@ -22,4 +22,4 @@ class User(db.Model):
     last_login = db.Column(db.DateTime, doc='最后登录时间')
     ctime = db.Column('create_time', db.DateTime, default=datetime.now, doc='创建时间')
     utime = db.Column('update_time', db.DateTime, default=datetime.now, onupdate=datetime.now, doc='更新时间')
-    status = db.Column(db.Integer, default=1, doc='状态，是否可用')
+    status = db.Column(db.Boolean, default=1, doc='状态，是否可用')
