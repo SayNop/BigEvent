@@ -5,7 +5,7 @@ from json import dumps
 
 def output_json(data, code, headers=None):
     """Makes a Flask response with a JSON encoded body"""
-    # 改写默认的json响应方法，统一返回格式
+    # 改写默认的json响应方法，统一返回格式， 视图中只需返回：{数据}, 响应状态码
     if str(code) == '400':
         current_app.logger.warn(request.headers)
         current_app.logger.warn(request.data)

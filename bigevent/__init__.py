@@ -30,5 +30,11 @@ def create_app(config, enable_config_file=False):
     # MySQL数据库连接初始化
     from models import db
 
+    db.init_app(app)
+
+    # 注册用户模块蓝图
+    from .resources.user import user_bp
+    app.register_blueprint(user_bp)
+
     return app
 
