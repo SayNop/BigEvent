@@ -18,8 +18,8 @@ class RegisterResource(Resource):
         登录创建token
         """
         json_parser = RequestParser()
-        json_parser.add_argument('username', type=parser.regex(r'.+'), required=True, location='json')
-        json_parser.add_argument('password', type=parser.regex(r'.+'), required=True, location='json')
+        json_parser.add_argument('username', type=parser.regex(r'.+'), required=True, location='form')
+        json_parser.add_argument('password', type=parser.regex(r'.+'), required=True, location='form')
         args = json_parser.parse_args()
         username = args.username
         password = args.password
@@ -33,7 +33,7 @@ class RegisterResource(Resource):
             # 其他会用到雪花算法生成id的地方：文章id 评论id
             # 这三个id在代码中直接操作数据库使用，所以要全局唯一，使用雪花算法生成
             user_id = current_app.id_worker.get_id()
-            user = User(id=user_id, username=username, password=password, last_login=datetime.now())
+            user = User(id=user_id, username=username, password=password, nickname=username, last_login=datetime.now())
             db.session.add(user)
             db.session.commit()
         else:

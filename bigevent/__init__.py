@@ -26,6 +26,11 @@ def create_app(config, enable_config_file=False):
     """
     app = create_flask_app(config, enable_config_file)
 
+    # 创建Snowflake ID worker
+    from utils.snowflake.id_worker import IdWorker
+    app.id_worker = IdWorker(app.config['DATACENTER_ID'],
+                             app.config['WORKER_ID'],
+                             app.config['SEQUENCE'])
 
     # MySQL数据库连接初始化
     from models import db

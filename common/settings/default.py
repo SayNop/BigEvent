@@ -25,3 +25,8 @@ class DefaultConfig(object):
     # CORS
     # TODO 调试后要修改
     CORS_ORIGINS = '*'
+
+    # Snowflake ID Worker 参数
+    DATACENTER_ID = 0
+    WORKER_ID = 0
+    SEQUENCE = 0
