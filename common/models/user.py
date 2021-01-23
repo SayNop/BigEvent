@@ -16,7 +16,7 @@ class User(db.Model):
 
     id = db.Column('user_id', db.Integer, primary_key=True, doc='用户ID')
     username = db.Column(db.String, doc='登陆用户名')
-    _password = db.Column(db.String, doc='密码')
+    _password = db.Column('password', db.String, doc='密码')
     nickname = db.Column(db.String, doc='昵称')
     email = db.Column(db.String, doc='邮箱')
     user_pic = db.Column(db.String, doc='头像')
