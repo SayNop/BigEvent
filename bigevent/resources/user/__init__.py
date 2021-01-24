@@ -10,3 +10,6 @@ user_api.representation('application/json')(output_json)
 
 user_api.add_resource(passport.RegisterResource, '/api/reguser',
                       endpoint='Register')
+
+user_api.add_resource(passport.LoginResource, '/api/login',
+                      endpoint='Login')

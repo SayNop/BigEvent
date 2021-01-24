@@ -32,8 +32,8 @@ class User(db.Model):
     # 赋值password，则自动加密存储。
     @password.setter
     def password(self, value):
-        self._password_hash_ = generate_password_hash(value)
+        self._password = generate_password_hash(value)
 
     # 使用check_password,进行密码校验，返回True False。
     def check_password(self, pasword):
-        return check_password_hash(self._password_hash_, pasword)
+        return check_password_hash(self._password, pasword)
