@@ -1,7 +1,7 @@
 from flask import Blueprint
 from flask_restful import Api
 
-from . import passport
+from . import passport, profile
 from utils.output import output_json
 
 user_bp = Blueprint('user', __name__)
@@ -14,5 +14,5 @@ user_api.add_resource(passport.RegisterResource, '/api/reguser',
 user_api.add_resource(passport.LoginResource, '/api/login',
                       endpoint='Login')
 
-user_api.add_resource(profile.ProfileResource, '/v1_0/user/profile',
-                      endpoint='Profile')
+user_api.add_resource(profile.UserInfoResource, '/my/userinfo',
+                      endpoint='Userinfo')

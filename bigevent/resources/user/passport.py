@@ -42,7 +42,7 @@ class RegisterResource(Resource):
             else:
                 return {'status':1, 'message':'User already exists.'}, 403
 
-        return {"status": 0,"message": "注册成功！"}, 200
+        return {"status": 0, "message": "注册成功！"}, 200
 
 
 class LoginResource(Resource):
@@ -97,7 +97,7 @@ class LoginResource(Resource):
         else:
             return {'status': 1, 'message': 'Wrong password.'}, 403
 
-        return {'token': 'Bearer '+token}, 201
+        return {'message': '登录成功！', 'token': 'Bearer '+token}, 201
 
 
 
