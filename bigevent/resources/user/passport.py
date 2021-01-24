@@ -93,7 +93,7 @@ class LoginResource(Resource):
 
         # 登陆业务逻辑
         if user.check_password(password):
-            token, refresh_token = self._generate_tokens(user.id)
+            token, refresh_token = self._generate_tokens(user.id, False)
         else:
             return {'status': 1, 'message': 'Wrong password.'}, 403
 

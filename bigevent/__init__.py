@@ -37,6 +37,10 @@ def create_app(config, enable_config_file=False):
 
     db.init_app(app)
 
+    # 添加请求钩子
+    from utils.middlewares import jwt_authentication
+    app.before_request(jwt_authentication)
+
     # 注册用户模块蓝图
     from .resources.user import user_bp
     app.register_blueprint(user_bp)
