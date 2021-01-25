@@ -40,14 +40,19 @@ def image_base64(value):
     :param value:
     :return:
     """
+    if len(value) % 3 == 1:
+        value += "=="
+    elif len(value) % 3 == 2:
+        value += "="
+
     try:
         photo = base64.b64decode(value)
         file_header = photo[:32]
         file_type = imghdr.what(None, file_header)
     except Exception:
-        raise ValueError('Invalid image.')
+        raise ValueError('Invalid image or too large image.')
     else:
         if not file_type:
-            raise ValueError('Invalid image.')
+            raise ValueError(f'Invalid image.Filetype is {file_type}')
         else:
             return photo

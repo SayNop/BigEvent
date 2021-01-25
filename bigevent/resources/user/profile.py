@@ -76,16 +76,16 @@ class UserInfoResource(Resource):
 
 
 class ChangePicResource(Resource):
-    """后台查看用户详情"""
+    """修改头像"""
     method_decorators = {
         'post': [login_required]
     }
 
     def post(self):
         # 请求体参数：新头像，base64格式的字符串
-        json_parser = RequestParser()
-        json_parser.add_argument('avatar', type==parser.image_base64, required=True, location='form')
-        args = json_parser.parse_args()
+        rp = RequestParser()
+        rp.add_argument('avatar', type=parser.image_base64, required=True, location='form')
+        args = rp.parse_args()
 
         user_id = g.user_id
         user = User.query.get(user_id)
