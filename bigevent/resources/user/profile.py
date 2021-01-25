@@ -25,7 +25,7 @@ class UserInfoResource(Resource):
         user_id = g.user_id
         user = User.query.filter_by(id=user_id).first()
         result = {
-            'message':"获取用户基本信息成功！",
+            'msg':"获取用户基本信息成功！",
             'id': user_id,
             'username': user.username,
             'email': user.email,

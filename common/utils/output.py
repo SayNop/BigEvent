@@ -12,10 +12,10 @@ def output_json(data, code, headers=None):
         current_app.logger.warn(str(data))
 
     # 去除系统响应的改造，使flask系统响应保持原状
-    if 'status' not in data and 'message' in data and str(code) != '404':
+    if 'status' not in data and 'msg' in data:
         data = {
             'status':0,
-            'message': data.pop('message'),
+            'message': data.pop('msg'),
             'data': data
         }
 

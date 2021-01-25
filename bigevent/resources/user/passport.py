@@ -98,7 +98,7 @@ class LoginResource(Resource):
         else:
             return {'status': 1, 'message': 'Wrong password.'}, 403
 
-        return {'message': '登录成功！', 'token': 'Bearer '+token}, 201
+        return {'msg': '登录成功！', 'token': 'Bearer '+token}, 201
 
 
 class ChangePwdResource(Resource):
