@@ -20,6 +20,7 @@ def regex(pattern):
 
     return validate
 
+
 def email(email_str):
     """
     检验邮箱格式

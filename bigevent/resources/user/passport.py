@@ -1,5 +1,5 @@
 from flask_restful import Resource
-from flask import current_app
+from flask import g, current_app
 from flask_restful.reqparse import RequestParser
 from datetime import datetime, timedelta
 
@@ -7,11 +7,12 @@ from utils import parser
 from models import db
 from models.user import User
 from utils.jwt_util import generate_jwt
+from utils.decorators import login_required
 
 
 class RegisterResource(Resource):
     """
-    认证
+    注册
     """
     def post(self):
         """
@@ -47,7 +48,7 @@ class RegisterResource(Resource):
 
 class LoginResource(Resource):
     """
-    认证
+    登陆
     """
     def _generate_tokens(self, user_id, refresh=True):
         """
@@ -100,10 +101,35 @@ class LoginResource(Resource):
         return {'message': '登录成功！', 'token': 'Bearer '+token}, 201
 
 
+class ChangePwdResource(Resource):
+    """修改密码"""
+    method_decorators = {
+        'post': [login_required]
+    }
 
+    def post(self):
+        """修改密码"""
+        # 请求体参数：oldPwd、newPwd
+        json_parser = RequestParser()
+        json_parser.add_argument('oldPwd', type=parser.regex(r'.+'), required=True, location='form')
+        json_parser.add_argument('newPwd', type=parser.regex(r'.+'), required=True, location='form')
+        args = json_parser.parse_args()
+        oldPwd = args.oldPwd
+        newPwd = args.newPwd
 
+        user_id = g.user_id
+        user = User.query.get(user_id)
 
+        # 校验密码
+        if not user.check_password(oldPwd):
+            return {'status': 1, 'message': 'Wrong password.'}, 403
 
+        # 提交到数据库执行
+        user.password = newPwd
+        db.session.add(user)
+        db.session.commit()
+
+        return {"status": 0, "message": "更新密码成功！"}, 201
 
 
 
