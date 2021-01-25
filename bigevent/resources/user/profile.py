@@ -72,3 +72,35 @@ class UserInfoResource(Resource):
             return {'status': 1, 'message': 'Username has existed.'}, 409
 
         return {'status': 0, 'message': "修改用户信息成功！"}, 201
+
+
+class ChangePicResource(Resource):
+    """后台查看用户详情"""
+    method_decorators = {
+        'post': [login_required]
+    }
+
+    def post(self):
+        # 请求体参数：新头像，base64格式的字符串
+        json_parser = RequestParser()
+        json_parser.add_argument('avatar', type==parser.image_base64, required=True, location='form')
+        args = json_parser.parse_args()
+
+        user_id = g.user_id
+        user = User.query.get(user_id)
+
+        try:
+            photo_url = upload(args.avatar)
+        except Exception as e:
+            current_app.logger.error('upload failed {}'.format(e))
+            return {"status": 1, 'message': 'Uploading profile photo image failed.'}, 507
+
+        try:
+            user.user_pic = photo_url
+            db.session.add(user)
+            db.session.commit()
+        except IntegrityError:
+            db.session.rollback()
+            return {"status": 1, 'message': 'Saving profile photo image failed.'}, 507
+
+        return {"status": 0, "message": "更新头像成功！"}, 201

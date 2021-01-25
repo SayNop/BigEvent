@@ -1,4 +1,6 @@
 import re
+import base64
+import imghdr
 
 
 def regex(pattern):
@@ -31,3 +33,21 @@ def email(email_str):
         return email_str
     else:
         raise ValueError('{} is not a valid email'.format(email_str))
+
+def image_base64(value):
+    """
+    检查是否是base64图片文件
+    :param value:
+    :return:
+    """
+    try:
+        photo = base64.b64decode(value)
+        file_header = photo[:32]
+        file_type = imghdr.what(None, file_header)
+    except Exception:
+        raise ValueError('Invalid image.')
+    else:
+        if not file_type:
+            raise ValueError('Invalid image.')
+        else:
+            return photo

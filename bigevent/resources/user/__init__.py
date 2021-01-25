@@ -19,3 +19,6 @@ user_api.add_resource(profile.UserInfoResource, '/my/userinfo',
 
 user_api.add_resource(passport.ChangePwdResource, '/my/updatepwd',
                       endpoint='ChangePwd')
+
+user_api.add_resource(profile.ChangePicResource, '/my/update/avatar',
+                      endpoint='ChangePic')
