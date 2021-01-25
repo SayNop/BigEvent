@@ -21,3 +21,7 @@ article_api.add_resource(category.CateDelResource, '/my/article/deletecate/<int:
 
 article_api.add_resource(category.CategoryResource, '/my/article/cates/<int:id>',
                       endpoint='getSCategory')
+
+article_api.add_resource(category.CategoryResource, '/my/article/updatecate',
+                         endpoint='updateCategory')
+

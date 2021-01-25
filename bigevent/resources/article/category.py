@@ -102,7 +102,8 @@ class CateDelResource(Resource):
 class CategoryResource(Resource):
     """操作单个频道数据"""
     method_decorators = {
-        'get': [login_required]
+        'get': [login_required],
+        'post': [login_required]
     }
 
     def get(self, id):
@@ -114,3 +115,29 @@ class CategoryResource(Resource):
 
         return {"msg": "获取文章分类数据成功！", 'id': cate.id, 'name': cate.name, 'alias': cate.alias,
                 'is_delete': cate.is_delete}
+
+    def post(self):
+        """更新指定分类信息"""
+        rp = RequestParser()
+        rp.add_argument('id', type=parser.regex(r'\d+'), required=True, location='form')
+        rp.add_argument('name', type=parser.regex(r'.+'), required=True, location='form')
+        rp.add_argument('alias', type=parser.regex(r'.+'), required=True, location='form')
+        args = rp.parse_args()
+
+        cate = Category.query.filter_by(id=args.id).first()
+
+        if cate is None:
+            return {'status': 1, 'message': 'Category does not exist.'}, 403
+
+        # 不可被删除分类
+        if cate.is_delete == Category.DELETE.NOPERMISSION:
+            return {'status': 1, 'message': 'Category cannot be modified.'}, 403
+
+        if cate.is_delete == Category.DELETE.DELETED:
+            return {'status': 1, 'message': 'Category has already be deleted.'}, 403
+
+        cate.name = args.name
+        cate.alias = args.alias
+        db.session.add(cate)
+        db.session.commit()
+        return {"status": 0, "message": "更新分类信息成功！"}, 201
