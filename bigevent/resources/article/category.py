@@ -97,3 +97,20 @@ class CateDelResource(Resource):
         db.session.commit()
 
         return {"status": 0, "message": "删除文章分类成功！"}, 200
+
+
+class CategoryResource(Resource):
+    """操作单个频道数据"""
+    method_decorators = {
+        'get': [login_required]
+    }
+
+    def get(self, id):
+        """获取指定分类信息"""
+        cate = Category.query.filter_by(id=id).first()
+
+        if cate is None:
+            return {'status': 1, 'message': 'Category does not exist.'}, 403
+
+        return {"msg": "获取文章分类数据成功！", 'id': cate.id, 'name': cate.name, 'alias': cate.alias,
+                'is_delete': cate.is_delete}
