@@ -22,6 +22,12 @@ class DefaultConfig(object):
     JWT_EXPIRY_HOURS = 2
     JWT_REFRESH_DAYS = 14
 
+    # 七牛云
+    QINIU_ACCESS_KEY = 'UlWurkUaDseaEV6riHhialybOqE79AuXwLn_cU8_'
+    QINIU_SECRET_KEY = '_lKs6cnUQKVOAOFBYr9o4WQGRYj9TnX5A8NQpuwY'
+    QINIU_BUCKET_NAME = 'toutiao_tbd39'
+    QINIU_DOMAIN = 'http://prowb4e5h.bkt.clouddn.com/'
+
     # CORS
     # TODO 调试后要修改
     CORS_ORIGINS = '*'

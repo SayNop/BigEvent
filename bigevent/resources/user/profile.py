@@ -6,6 +6,7 @@ from flask_restful import inputs
 from sqlalchemy.exc import IntegrityError
 
 from utils.decorators import login_required
+from utils.qiniu_storage import upload
 from models import db
 from models.user import User
 
