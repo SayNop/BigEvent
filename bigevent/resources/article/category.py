@@ -8,7 +8,7 @@ from utils.decorators import login_required
 from utils import parser
 
 
-class CategoryResource(Resource):
+class CategoryListResource(Resource):
     """
     频道列表
     """
@@ -70,3 +70,30 @@ class CategoryResource(Resource):
         db.session.commit()
 
         return {"status": 0, "message": "新增文章分类成功！"}, 200
+
+
+class CateDelResource(Resource):
+    """操作单个频道数据"""
+    method_decorators = {
+        'get': [login_required]
+    }
+
+    def get(self, id):
+        """
+        删除指定分类
+        """
+        cate = Category.query.filter_by(id=id).first()
+
+        if cate is None:
+            return {'status': 1, 'message': 'Category does not exist.'}, 403
+
+        # 不可被删除分类
+        if cate.is_delete == Category.DELETE.NOPERMISSION:
+            return {'status': 1, 'message': 'Category cannot be deleted.'}, 403
+
+        # 删除该分类
+        cate.is_delete = Category.DELETE.DELETED
+        db.session.add(cate)
+        db.session.commit()
+
+        return {"status": 0, "message": "删除文章分类成功！"}, 200

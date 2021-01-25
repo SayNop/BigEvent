@@ -10,8 +10,11 @@ article_api = Api(article_bp, catch_all_404s=True)
 article_api.representation('application/json')(output_json)
 
 
-article_api.add_resource(category.CategoryResource, '/my/article/cates',
+article_api.add_resource(category.CategoryListResource, '/my/article/cates',
                       endpoint='Category')
 
-article_api.add_resource(category.CategoryResource, '/my/article/addcates',
+article_api.add_resource(category.CategoryListResource, '/my/article/addcates',
                       endpoint='addCategory')
+
+article_api.add_resource(category.CateDelResource, '/my/article/deletecate/<int:id>',
+                      endpoint='delCategory')
