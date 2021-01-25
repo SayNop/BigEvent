@@ -1,8 +1,11 @@
 from flask_restful import Resource
+from flask_restful.reqparse import RequestParser
 from sqlalchemy.orm import load_only
 
+from models import db
 from models.category import Category
 from utils.decorators import login_required
+from utils import parser
 
 
 class CategoryResource(Resource):
@@ -10,7 +13,8 @@ class CategoryResource(Resource):
     频道列表
     """
     method_decorators = {
-        'get': [login_required]
+        'get': [login_required],
+        'post': [login_required]
     }
 
     def get(self):
@@ -35,4 +39,34 @@ class CategoryResource(Resource):
                 'is_delete': channel.is_delete
             })
 
-        return {'status':0, 'message': '获取文章分类列表成功！', 'data': results}
+        return {'msg': '获取文章分类列表成功！', 'data': results}
+
+    def post(self):
+        """
+        新增频道
+        :return:
+        """
+        rp = RequestParser()
+        rp.add_argument('name', type=parser.regex(r'.+'), required=True, location='form')
+        rp.add_argument('alias', type=parser.regex(r'.+'), required=True, location='form')
+        args = rp.parse_args()
+
+        cate = Category.query.filter_by(name=args.name).first()
+
+        if cate is not None:
+            if cate.is_delete != Category.DELETE.DELETED:
+                return {'status': 1, 'message': 'Category already exists.'}, 403
+            else:
+                # 已存在但被删除，恢复该分类
+                cate.is_delete = Category.DELETE.UNDELETE
+                cate.alias = args.alias
+                db.session.add(cate)
+                db.session.commit()
+                return {"status": 0, "message": "新增文章分类成功！"}, 201
+
+        # 不存在，新建分类
+        cate = Category(name=args.name, alias=args.alias)
+        db.session.add(cate)
+        db.session.commit()
+
+        return {"status": 0, "message": "新增文章分类成功！"}, 200

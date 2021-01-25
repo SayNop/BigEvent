@@ -12,3 +12,6 @@ article_api.representation('application/json')(output_json)
 
 article_api.add_resource(category.CategoryResource, '/my/article/cates',
                       endpoint='Category')
+
+article_api.add_resource(category.CategoryResource, '/my/article/addcates',
+                      endpoint='addCategory')
