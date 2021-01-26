@@ -7,7 +7,7 @@ class Article(db.Model):
     """
     文章基本信息表
     """
-    __tablename__ = 'news_article_basic'
+    __tablename__ = 'tb_article'
 
     class STATUS:
         APPROVED = 1  # 已发布
@@ -19,7 +19,7 @@ class Article(db.Model):
 
     id = db.Column('article_id', db.Integer, primary_key=True,  doc='文章ID')
     user_id = db.Column(db.Integer, db.ForeignKey('tb_user.user_id'), doc='用户ID')
-    cate_id = db.Column(db.Integer, db.ForeignKey('news_channel.channel_id'), doc='频道ID')
+    cate_id = db.Column(db.Integer, db.ForeignKey('tb_cate.cate_id'), doc='分类ID')
     title = db.Column(db.String, doc='标题')
     content = db.Column(db.Text, doc='帖文内容')
     cover_img = db.Column(db.String, doc='封面')

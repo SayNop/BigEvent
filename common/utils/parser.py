@@ -34,25 +34,58 @@ def email(email_str):
     else:
         raise ValueError('{} is not a valid email'.format(email_str))
 
+
 def image_base64(value):
     """
     检查是否是base64图片文件
     :param value:
     :return:
     """
-    if len(value) % 3 == 1:
-        value += "=="
-    elif len(value) % 3 == 2:
-        value += "="
+    # if len(value) % 3 == 1:
+    #     value += "=="
+    # elif len(value) % 3 == 2:
+    #     value += "="
 
     try:
         photo = base64.b64decode(value)
-        file_header = photo[:32]
-        file_type = imghdr.what(None, file_header)
+        # photo = base64.urlsafe_b64decode(value)
+        file_type = imghdr.what(None, photo)
+        # file_header = photo[:32]
+        # file_type = imghdr.what(None, file_header)
     except Exception:
         raise ValueError('Invalid image or too large image.')
     else:
         if not file_type:
-            raise ValueError(f'Invalid image.Filetype is {file_type}')
+            # raise ValueError(f"Invalid image. File type is {file_type}, File header is {file_header}.")
+            raise ValueError(f"Invalid image. File type is {file_type}.")
         else:
             return photo
+
+
+def image_file(value):
+    """
+    检查是否是图片文件
+    :param value:
+    :return:
+    """
+    try:
+        file_type = imghdr.what(value)
+    except Exception:
+        raise ValueError('Invalid image.')
+    else:
+        if not file_type:
+            raise ValueError('Invalid image.')
+        else:
+            return value
+
+
+def article_state(value):
+    """
+    检查是否是文章状态信息
+    :param value:
+    :return:
+    """
+    if value not in ['已发布', '草稿']:
+        raise ValueError('{} is not a valid article status'.format(value))
+    else:
+        return value

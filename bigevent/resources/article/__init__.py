@@ -1,7 +1,7 @@
 from flask import Blueprint
 from flask_restful import Api
 
-from . import category
+from . import category, article
 from utils.output import output_json
 
 
@@ -25,3 +25,5 @@ article_api.add_resource(category.CategoryResource, '/my/article/cates/<int:id>'
 article_api.add_resource(category.CategoryResource, '/my/article/updatecate',
                          endpoint='updateCategory')
 
+article_api.add_resource(article.ArticleListResource, '/my/article/add',
+                         endpoint='addArticle')

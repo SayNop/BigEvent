@@ -33,7 +33,7 @@ CREATE TABLE `tb_cate` (
 
 CREATE TABLE `tb_article` (
   `article_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '文章ID',
-  `user_id` bigint(20) unsigned NOT NULL COMMENT '用户ID',
+  `user_id` bigint(20) unsigned COMMENT '用户ID',
   `cate_id` int(11) unsigned NOT NULL COMMENT '分类ID',
   `title` varchar(128) NOT NULL COMMENT '标题',
   `content` longtext NOT NULL COMMENT '文章内容',

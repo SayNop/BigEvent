@@ -93,7 +93,8 @@ class ChangePicResource(Resource):
         try:
             photo_url = upload(args.avatar)
         except Exception as e:
-            current_app.logger.error('upload failed {}'.format(e))
+            # 日志（暂不记录）
+            # current_app.logger.error('upload failed {}'.format(e))
             return {"status": 1, 'message': 'Uploading profile photo image failed.'}, 507
 
         try:

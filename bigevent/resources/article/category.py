@@ -114,7 +114,8 @@ class CategoryResource(Resource):
             return {'status': 1, 'message': 'Category does not exist.'}, 403
 
         return {"msg": "获取文章分类数据成功！", 'id': cate.id, 'name': cate.name, 'alias': cate.alias,
-                'is_delete': cate.is_delete}
+                'is_delete': Category.DELETE.UNDELETE if cate.is_delete == Category.DELETE.NOPERMISSION
+                else cate.is_delete}
 
     def post(self):
         """更新指定分类信息"""
