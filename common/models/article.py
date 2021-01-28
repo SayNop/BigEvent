@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from . import db
+from .category import Category
 
 
 class Article(db.Model):
@@ -11,11 +12,11 @@ class Article(db.Model):
 
     class STATUS:
         APPROVED = 1  # 已发布
-        DRAFT = 0 # 草稿
+        DRAFT = 0  # 草稿
 
     class DELETE:
         DELETED = 1  # 已删除
-        UNDELETE = 0 # 未删除
+        UNDELETE = 0  # 未删除
 
     id = db.Column('article_id', db.Integer, primary_key=True,  doc='文章ID')
     user_id = db.Column(db.Integer, db.ForeignKey('tb_user.user_id'), doc='用户ID')
@@ -27,4 +28,6 @@ class Article(db.Model):
     status = db.Column(db.Integer, default=0, doc='帖文状态')
     utime = db.Column('update_time', db.DateTime, default=datetime.now, doc='更新时间')
     is_delete = db.Column(db.Boolean, default=False, doc='是否删除')
+
+    cate = db.relationship('Category', primaryjoin='Article.cate_id==foreign(Category.id)', uselist=False)
 

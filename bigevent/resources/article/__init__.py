@@ -27,3 +27,6 @@ article_api.add_resource(category.CategoryResource, '/my/article/updatecate',
 
 article_api.add_resource(article.ArticleListResource, '/my/article/add',
                          endpoint='addArticle')
+
+article_api.add_resource(article.ArticleListResource, '/my/article/list',
+                         endpoint='ArticleList')

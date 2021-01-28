@@ -1,11 +1,13 @@
 from flask_restful import Resource
 from flask_restful.reqparse import RequestParser
+from flask_restful import inputs
 from flask import g, current_app
-from sqlalchemy.orm import load_only
+from sqlalchemy.orm import load_only, contains_eager
 
 from models import db
 from models.article import Article
 from models.category import Category
+from . import constants
 from utils.decorators import login_required
 from utils import parser
 from utils.qiniu_storage import upload
@@ -15,6 +17,10 @@ class ArticleListResource(Resource):
     """
     文章列表
     """
+    method_decorators = {
+        'get': [login_required]
+    }
+
     def post(self):
         """
         新增文章
@@ -55,3 +61,83 @@ class ArticleListResource(Resource):
         db.session.commit()
 
         return {"status": 0, "message": "发布文章成功！"}, 200
+
+    def get(self):
+        """获取文章列表"""
+        # 请求体参数：
+        # pagenum	是	int	页码值
+        # pagesize	是	int	每页显示多少条数据
+        # cate_id	否	string	文章分类的 Id
+        # state
+        rp = RequestParser()
+        rp.add_argument('pagenum', type=inputs.positive, required=True, location='args')
+        rp.add_argument('pagesize', type=inputs.int_range(constants.DEFAULT_ARTICLE_PER_PAGE_MIN,
+                                                          constants.DEFAULT_ARTICLE_PER_PAGE_MAX, 'per_page'),
+                        required=True, location='args')
+        rp.add_argument('cate_id', type=parser.regex(r'\d+'), required=False, location='args')
+        rp.add_argument('state', type=parser.article_state, required=False, location='args')
+        args = rp.parse_args()
+
+        per_page = args.pagesize
+        page = args.pagenum
+        cate_id = None if args.cate_id is None else args.cate_id
+        state = None if args.state is None else (Article.STATUS.DRAFT if args.state == '草稿' else
+                                                 Article.STATUS.APPROVED)
+
+        # 判断分类id是否合法
+        if cate_id is not None:
+            cate = Category.query.filter_by(id=args.cate_id).first()
+            if cate is None:
+                return {'status': 1, 'message': 'Category does not exist.'}, 403
+
+        # 进行查询
+        # 要响应的字段"Id","title","pub_date":"2020-01-03 12:19:57.690","state":"已发布","cate_name"
+        if cate_id is None and state is None:
+            # 查询cate_name需要通过cate_id联表查询
+            arts = Article.query.join(Article.cate).options(load_only(Article.id, Article.title, Article.ctime,
+                                                                      Article.status, Article.cate_id),
+                                                            contains_eager(Article.cate).load_only(Category.name))\
+                .order_by(Article.ctime.desc()).all()
+        # 只过滤分类
+        elif cate_id is None and state is not None:
+            arts = Article.query.join(Article.cate).options(load_only(Article.id, Article.title, Article.ctime,
+                                                                      Article.status, Article.cate_id),
+                                                            contains_eager(Article.cate).load_only(Category.name))\
+                .filter(Article.status == state).order_by(Article.ctime.desc()).all()
+        # 只过滤状态
+        elif state is None and cate_id is not None:
+            arts = Article.query.join(Article.cate).options(load_only(Article.id, Article.title, Article.ctime,
+                                                                      Article.status, Article.cate_id),
+                                                            contains_eager(Article.cate).load_only(Category.name))\
+                .filter(Article.cate_id == cate_id).order_by(Article.ctime.desc()).all()
+        # 既要过滤分类，又要过滤状态
+        else:
+            arts = Article.query.join(Article.cate).options(load_only(Article.id, Article.title, Article.ctime,
+                                                                      Article.status, Article.cate_id),
+                                                            contains_eager(Article.cate).load_only(Category.name)) \
+                .filter(Article.status == state, Article.cate_id == cate_id).order_by(Article.ctime.desc()).all()
+
+        articles = []
+
+        if not arts:
+            return {"status": 0, "message": "获取文章列表成功！", "data": [], "total": 0}
+
+        for art in arts:
+            # "Id": 2,
+            # "title": "666",
+            # "pub_date": "2020-01-03 12:20:19.817",
+            # "state": "已发布",
+            # "cate_name": "股市"
+            articles.append({
+                'id': art.id,
+                'title': art.title,
+                'pub_date': art.ctime.strftime('%Y-%m-%d %H:%M:%s')[:-7],
+                'state': '已发布' if art.status == Article.STATUS.APPROVED else '草稿',
+                'cate_name': art.cate.name
+            })
+
+
+        # 通过结果列表切片进行分页
+        page_articles = articles[(page - 1) * per_page:page * per_page]
+
+        return {"status": 0, "message": "获取文章列表成功！", "data": page_articles, "total": len(articles)}
