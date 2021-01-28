@@ -42,9 +42,10 @@ class ArticleListResource(Resource):
         args = rp.parse_args()
 
         cate = Category.query.filter_by(id=args.cate_id).first()
-
         if cate is None:
             return {'status': 1, 'message': 'Category does not exist.'}, 403
+        if cate.is_delete == Category.DELETE.DELETED:
+            return {'status': 1, 'message': 'The category has been deleted.'}, 403
 
         # 新建文章
         # try:
@@ -139,7 +140,6 @@ class ArticleListResource(Resource):
                 'cate_name': art.cate.name
             })
 
-
         # 通过结果列表切片进行分页
         page_articles = articles[(page - 1) * per_page:page * per_page]
 
@@ -172,11 +172,12 @@ class ArticleDelResource(Resource):
 class ArticleResource(Resource):
     """操作单个文章数据"""
     method_decorators = {
-        'get': [login_required]
+        'get': [login_required],
+        'post': [login_required]
     }
 
     def get(self, id):
-        """获取指定分类信息"""
+        """获取指定文章信息"""
         art = Article.query.filter_by(id=id).first()
 
         if art is None:
@@ -188,3 +189,49 @@ class ArticleResource(Resource):
                 'pub_date': art.ctime.strftime('%Y-%m-%d %H:%M:%s')[:-7],
                 "state": '已发布' if art.status == Article.STATUS.APPROVED else '草稿', 'is_delete': art.is_delete,
                 'cate_id': art.cate_id, 'author_id': art.user_id,}
+
+    def post(self):
+        """更新指定文章信息"""
+        # 请求参数：Id	title	cate_id content	cover_img	state
+        rp = RequestParser()
+        rp.add_argument('id', type=parser.regex(r'\d+'), required=True, location='form')
+        rp.add_argument('title', type=parser.regex(r'.+'), required=True, location='form')
+        rp.add_argument('cate_id', type=parser.regex(r'.+'), required=True, location='form')
+        rp.add_argument('content', type=parser.regex(r'\d+'), required=True, location='form')
+        rp.add_argument('cover_img', type=parser.image_file, required=True, location='files')
+        rp.add_argument('state', type=parser.regex(r'.+'), required=True, location='form')
+        args = rp.parse_args()
+
+        # 判断文章状态
+        art = Article.query.filter_by(id=args.id).first()
+        if art is None:
+            return {'status': 1, 'message': 'The article does not exist.'}, 403
+        if art.is_delete == Article.DELETE.DELETED:
+            return {'status': 1, 'message': 'The article has been deleted.'}, 403
+        if art.user_id != g.user_id:
+            print(f'art.user_id is {art.user_id}, g.user_id is {g.user_id}')
+            return {'status': 1, 'message': 'You have no permission to change this article.'}, 403
+
+        # 判断分类状态
+        cate = Category.query.filter_by(id=args.cate_id).first()
+        if cate is None:
+            return {'status': 1, 'message': 'The category does not exist.'}, 403
+        if cate.is_delete == Category.DELETE.DELETED:
+            return {'status': 1, 'message': 'The category has been deleted.'}, 403
+
+        # 上传图片
+        # try:
+        #     photo_url = upload(args.cover_img)
+        # except Exception as e:
+        #     # 日志（暂不记录）
+        #     # current_app.logger.error('upload failed {}'.format(e))
+        #     return {"status": 1, 'message': 'Uploading profile photo image failed.'}, 507
+        art.title = args.title
+        art.cate_id = args.cate_id
+        art.content = args.content
+        # art.cover_img=photo_url
+        art.status = Article.STATUS.DRAFT if args.state == '草稿' else Article.STATUS.APPROVED
+        db.session.add(art)
+        db.session.commit()
+
+        return {"status": 0, "message": "修改文章成功！"}, 201

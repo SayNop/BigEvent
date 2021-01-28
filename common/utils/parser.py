@@ -41,11 +41,21 @@ def image_base64(value):
     :param value:
     :return:
     """
-    stri = value.split(',')[0]
-    if not re.match(r'data:image/(.+);base64', stri):
+    if not re.match(r'data:image/(.+);base64,(.+)(=?)(=?)', value):
+        raise ValueError('Invalid image.')
+
+    ind = value.find(',')
+    hstr = value[:ind]
+    if not re.match(r'data:image/(.+);base64', hstr):
         raise ValueError('Invalid image.')
     else:
-        print('base64格式正确')
+        # 'base64格式正确'
+        img_type = hstr[11:-7].lower()
+        # base64格式正确但图片格式不正确
+        if img_type not in ['bmp', 'jpg', 'jpeg', 'png', 'tif', 'gif', 'webp']:
+            raise ValueError('Invalid image.')
+
+    return value
 
 
 def image_file(value):

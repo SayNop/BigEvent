@@ -36,3 +36,6 @@ article_api.add_resource(article.ArticleDelResource, '/my/article/delete/<int:id
 
 article_api.add_resource(article.ArticleResource, '/my/article/<int:id>',
                          endpoint='getSArticle')
+
+article_api.add_resource(article.ArticleResource, '/my/article/edit',
+                         endpoint='updateArticle')
