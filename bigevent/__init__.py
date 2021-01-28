@@ -49,5 +49,9 @@ def create_app(config, enable_config_file=False):
     from .resources.article import article_bp
     app.register_blueprint(article_bp)
 
+    # 跨域问题的解决
+    from flask_cors import CORS
+    CORS(app, resources=r'/*')
+
     return app
 
