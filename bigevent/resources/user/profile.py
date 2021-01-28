@@ -25,9 +25,10 @@ class UserInfoResource(Resource):
         user_id = g.user_id
         user = User.query.filter_by(id=user_id).first()
         result = {
-            'msg':"获取用户基本信息成功！",
+            'msg': "获取用户基本信息成功！",
             'id': user_id,
             'username': user.username,
+            'nickname': user.nickname,
             'email': user.email,
             'user_pic': user.user_pic
         }
@@ -90,15 +91,10 @@ class ChangePicResource(Resource):
         user_id = g.user_id
         user = User.query.get(user_id)
 
-        try:
-            photo_url = upload(args.avatar)
-        except Exception as e:
-            # 日志（暂不记录）
-            # current_app.logger.error('upload failed {}'.format(e))
-            return {"status": 1, 'message': 'Uploading profile photo image failed.'}, 507
+        img = args.avatar
 
         try:
-            user.user_pic = photo_url
+            user.user_pic = img
             db.session.add(user)
             db.session.commit()
         except IntegrityError:

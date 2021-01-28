@@ -5,6 +5,7 @@ DROP TABLE IF EXISTS `tb_cate`;
 DROP TABLE IF EXISTS `tb_article`;
 DROP TABLE IF EXISTS `news_comment`;
 
+-- `user_pic` varchar(128) NULL COMMENT '头像',
 CREATE TABLE `tb_user` (
   `user_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '用户ID',
   `username` varchar(20) COMMENT '登陆用户名',
@@ -12,7 +13,7 @@ CREATE TABLE `tb_user` (
   `status` tinyint(1) NOT NULL DEFAULT '1' COMMENT '状态，是否可用，0-不可用，1-可用',
   `password` varchar(93) NULL COMMENT '密码',
   `nickname` varchar(32) NOT NULL COMMENT '昵称',
-  `user_pic` varchar(128) NULL COMMENT '头像',
+  `user_pic` longtext NULL COMMENT '头像',
   `last_login` datetime NULL COMMENT '最后登录时间',
   `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',

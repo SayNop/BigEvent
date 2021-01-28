@@ -41,21 +41,18 @@ def image_base64(value):
     :param value:
     :return:
     """
-    if not re.match(r'data:image/(.+);base64,(.+)(=?)(=?)', value):
-        raise ValueError('Invalid image.')
-
-    ind = value.find(',')
-    hstr = value[:ind]
-    if not re.match(r'data:image/(.+);base64', hstr):
+    ind = value.find(',')	  # 因为base64头部与数据体用逗号隔开
+    data = value[ind+1:]	  # 切片取出数据体
+    try:
+        photo = base64.b64decode(data)
+        file_type = imghdr.what(None, photo)
+    except Exception:
         raise ValueError('Invalid image.')
     else:
-        # 'base64格式正确'
-        img_type = hstr[11:-7].lower()
-        # base64格式正确但图片格式不正确
-        if img_type not in ['bmp', 'jpg', 'jpeg', 'png', 'tif', 'gif', 'webp']:
+        if not file_type:
             raise ValueError('Invalid image.')
-
-    return value
+        else:
+            return value
 
 
 def image_file(value):
