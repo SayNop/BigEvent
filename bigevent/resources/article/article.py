@@ -36,7 +36,7 @@ class ArticleListResource(Resource):
         rp = RequestParser()
         rp.add_argument('title', type=parser.regex(r'.+'), required=True, location='form')
         rp.add_argument('cate_id', type=parser.regex(r'\d+'), required=True, location='form')
-        rp.add_argument('content', type=parser.regex(r'.+'), required=True, location='form')
+        rp.add_argument('content', required=True, location='form')
         rp.add_argument('cover_img', type=parser.image_file, required=True, location='files')
         rp.add_argument('state', type=parser.article_state, required=True, location='form')
         args = rp.parse_args()
@@ -97,8 +97,7 @@ class ArticleListResource(Resource):
             arts = Article.query.join(Article.cate).options(load_only(Article.id, Article.title, Article.ctime,
                                                                       Article.status, Article.cate_id),
                                                             contains_eager(Article.cate).load_only(Category.name))\
-                .filter(Article.is_delete == Article.DELETE.UNDELETE, Article.status == state)\
-                .order_by(Article.ctime.desc()).all()
+                .filter(Article.is_delete == Article.DELETE.UNDELETE).order_by(Article.ctime.desc()).all()
         # 只过滤分类
         elif cate_id is None and state is not None:
             arts = Article.query.join(Article.cate).options(load_only(Article.id, Article.title, Article.ctime,
@@ -197,7 +196,7 @@ class ArticleResource(Resource):
         rp.add_argument('id', type=parser.regex(r'\d+'), required=True, location='form')
         rp.add_argument('title', type=parser.regex(r'.+'), required=True, location='form')
         rp.add_argument('cate_id', type=parser.regex(r'.+'), required=True, location='form')
-        rp.add_argument('content', type=parser.regex(r'\d+'), required=True, location='form')
+        rp.add_argument('content', required=True, location='form')
         rp.add_argument('cover_img', type=parser.image_file, required=True, location='files')
         rp.add_argument('state', type=parser.regex(r'.+'), required=True, location='form')
         args = rp.parse_args()
