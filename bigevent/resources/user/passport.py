@@ -20,7 +20,7 @@ class RegisterResource(Resource):
         """
         json_parser = RequestParser()
         json_parser.add_argument('username', type=parser.regex(r'.+'), required=True, location='form')
-        json_parser.add_argument('password', type=parser.regex(r'.+'), required=True, location='form')
+        json_parser.add_argument('password', type=parser.regex(r'.{6,12}'), required=True, location='form')
         args = json_parser.parse_args()
         username = args.username
         password = args.password

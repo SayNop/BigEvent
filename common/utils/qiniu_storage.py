@@ -23,7 +23,7 @@ def upload(file_data):
     print('sk={}'.format(secret_key))
     print('bn={}'.format(bucket_name))
 
-    # 上传后保存的文件名
+    # 上传后保存的文件名, None表示七牛随机生成
     # key = 'my-python-logo.png'
     key = None
 

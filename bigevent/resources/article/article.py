@@ -48,14 +48,14 @@ class ArticleListResource(Resource):
             return {'status': 1, 'message': 'The category has been deleted.'}, 403
 
         # 新建文章
-        # try:
-        #     photo_url = upload(args.cover_img)
-        # except Exception as e:
-        #     # 日志（暂不记录）
-        #     # current_app.logger.error('upload failed {}'.format(e))
-        #     return {"status": 1, 'message': 'Uploading profile photo image failed.'}, 507
+        try:
+            photo_url = upload(args.cover_img.read())
+        except Exception as e:
+            # 日志（暂不记录）
+            # current_app.logger.error('upload failed {}'.format(e))
+            return {"status": 1, 'message': 'Uploading profile photo image failed.'}, 507
         art = Article(title=args.title, user_id=g.user_id, cate_id=args.cate_id, content=args.content,
-                      # cover_img=photo_url,
+                      cover_img=photo_url,
                       status=Article.STATUS.DRAFT if args.state == '草稿' else Article.STATUS.APPROVED)
         db.session.add(art)
         db.session.commit()
@@ -219,16 +219,16 @@ class ArticleResource(Resource):
             return {'status': 1, 'message': 'The category has been deleted.'}, 403
 
         # 上传图片
-        # try:
-        #     photo_url = upload(args.cover_img)
-        # except Exception as e:
-        #     # 日志（暂不记录）
-        #     # current_app.logger.error('upload failed {}'.format(e))
-        #     return {"status": 1, 'message': 'Uploading profile photo image failed.'}, 507
+        try:
+            photo_url = upload(args.cover_img.read())
+        except Exception as e:
+            # 日志（暂不记录）
+            # current_app.logger.error('upload failed {}'.format(e))
+            return {"status": 1, 'message': 'Uploading profile photo image failed.'}, 507
         art.title = args.title
         art.cate_id = args.cate_id
         art.content = args.content
-        # art.cover_img=photo_url
+        art.cover_img=photo_url
         art.status = Article.STATUS.DRAFT if args.state == '草稿' else Article.STATUS.APPROVED
         db.session.add(art)
         db.session.commit()
