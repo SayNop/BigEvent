@@ -18,6 +18,7 @@ class ArticleListResource(Resource):
     文章列表
     """
     method_decorators = {
+        'post': [login_required],
         'get': [login_required]
     }
 
@@ -40,8 +41,6 @@ class ArticleListResource(Resource):
         rp.add_argument('state', type=parser.article_state, required=True, location='form')
         args = rp.parse_args()
 
-        user_id = g.user_id
-
         cate = Category.query.filter_by(id=args.cate_id).first()
 
         if cate is None:
@@ -49,12 +48,12 @@ class ArticleListResource(Resource):
 
         # 新建文章
         # try:
-        #     photo_url = upload(args.avatar)
+        #     photo_url = upload(args.cover_img)
         # except Exception as e:
         #     # 日志（暂不记录）
         #     # current_app.logger.error('upload failed {}'.format(e))
         #     return {"status": 1, 'message': 'Uploading profile photo image failed.'}, 507
-        art = Article(title=args.title, user_id=user_id, cate_id=args.cate_id, content=args.content,
+        art = Article(title=args.title, user_id=g.user_id, cate_id=args.cate_id, content=args.content,
                       # cover_img=photo_url,
                       status=Article.STATUS.DRAFT if args.state == '草稿' else Article.STATUS.APPROVED)
         db.session.add(art)
@@ -168,3 +167,24 @@ class ArticleDelResource(Resource):
         db.session.commit()
 
         return {"status": 0, "message": "删除文章成功！"}, 200
+
+
+class ArticleResource(Resource):
+    """操作单个文章数据"""
+    method_decorators = {
+        'get': [login_required]
+    }
+
+    def get(self, id):
+        """获取指定分类信息"""
+        art = Article.query.filter_by(id=id).first()
+
+        if art is None:
+            return {'status': 1, 'message': 'The article does not exist.'}, 403
+
+        # 返回字段："Id", "title", "content", "cover_img", "pub_date", "state", "is_delete": 0, "cate_id", "author_id"
+        return {'msg': '获取文章分类数据成功！', 'id': art.id, 'title': art.title, 'content': art.content,
+                'cover_img': None if art.cover_img is None else current_app.config['QINIU_DOMAIN'] + art.cover_img,
+                'pub_date': art.ctime.strftime('%Y-%m-%d %H:%M:%s')[:-7],
+                "state": '已发布' if art.status == Article.STATUS.APPROVED else '草稿', 'is_delete': art.is_delete,
+                'cate_id': art.cate_id, 'author_id': art.user_id,}
