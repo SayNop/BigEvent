@@ -97,25 +97,29 @@ class ArticleListResource(Resource):
             arts = Article.query.join(Article.cate).options(load_only(Article.id, Article.title, Article.ctime,
                                                                       Article.status, Article.cate_id),
                                                             contains_eager(Article.cate).load_only(Category.name))\
+                .filter(Article.is_delete == Article.DELETE.UNDELETE, Article.status == state)\
                 .order_by(Article.ctime.desc()).all()
         # 只过滤分类
         elif cate_id is None and state is not None:
             arts = Article.query.join(Article.cate).options(load_only(Article.id, Article.title, Article.ctime,
                                                                       Article.status, Article.cate_id),
                                                             contains_eager(Article.cate).load_only(Category.name))\
-                .filter(Article.status == state).order_by(Article.ctime.desc()).all()
+                .filter(Article.is_delete == Article.DELETE.UNDELETE, Article.status == state)\
+                .order_by(Article.ctime.desc()).all()
         # 只过滤状态
         elif state is None and cate_id is not None:
             arts = Article.query.join(Article.cate).options(load_only(Article.id, Article.title, Article.ctime,
                                                                       Article.status, Article.cate_id),
                                                             contains_eager(Article.cate).load_only(Category.name))\
-                .filter(Article.cate_id == cate_id).order_by(Article.ctime.desc()).all()
+                .filter(Article.is_delete == Article.DELETE.UNDELETE, Article.cate_id == cate_id)\
+                .order_by(Article.ctime.desc()).all()
         # 既要过滤分类，又要过滤状态
         else:
             arts = Article.query.join(Article.cate).options(load_only(Article.id, Article.title, Article.ctime,
                                                                       Article.status, Article.cate_id),
                                                             contains_eager(Article.cate).load_only(Category.name)) \
-                .filter(Article.status == state, Article.cate_id == cate_id).order_by(Article.ctime.desc()).all()
+                .filter(Article.is_delete == Article.DELETE.UNDELETE, Article.status == state,
+                        Article.cate_id == cate_id).order_by(Article.ctime.desc()).all()
 
         articles = []
 
@@ -141,3 +145,26 @@ class ArticleListResource(Resource):
         page_articles = articles[(page - 1) * per_page:page * per_page]
 
         return {"status": 0, "message": "获取文章列表成功！", "data": page_articles, "total": len(articles)}
+
+
+class ArticleDelResource(Resource):
+    """删除文章数据"""
+    method_decorators = {
+        'get': [login_required]
+    }
+
+    def get(self, id):
+        """
+        删除指定分类
+        """
+        art = Article.query.filter_by(id=id).first()
+
+        if art is None:
+            return {'status': 1, 'message': 'The article does not exist.'}, 403
+
+        # 删除该文章
+        art.is_delete = Article.DELETE.DELETED
+        db.session.add(art)
+        db.session.commit()
+
+        return {"status": 0, "message": "删除文章成功！"}, 200

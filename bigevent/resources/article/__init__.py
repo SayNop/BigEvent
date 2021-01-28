@@ -30,3 +30,6 @@ article_api.add_resource(article.ArticleListResource, '/my/article/add',
 
 article_api.add_resource(article.ArticleListResource, '/my/article/list',
                          endpoint='ArticleList')
+
+article_api.add_resource(article.ArticleDelResource, '/my/article/delete/<int:id>',
+                         endpoint='delArticle')
