@@ -151,11 +151,11 @@ class ArticleDelResource(Resource):
         'get': [login_required]
     }
 
-    def get(self, id):
+    def get(self, art_id):
         """
         删除指定分类
         """
-        art = Article.query.filter_by(id=id).first()
+        art = Article.query.filter_by(id=art_id).first()
 
         if art is None:
             return {'status': 1, 'message': 'The article does not exist.'}, 403

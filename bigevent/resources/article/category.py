@@ -21,8 +21,8 @@ class CategoryListResource(Resource):
         """
         获取所有频道信息
         """
-        channels = Category.query.options(load_only(Category.id, Category.name, Category.alias, Category.is_delete)) \
-            .order_by(Category.id).all()
+        channels = Category.query.options(load_only(Category.id, Category.name, Category.alias, Category.is_delete))\
+            .filter(Category.is_delete != Category.DELETE.DELETED).order_by(Category.id).all()
 
         results = []
 
@@ -78,11 +78,11 @@ class CateDelResource(Resource):
         'get': [login_required]
     }
 
-    def get(self, id):
+    def get(self, cate_id):
         """
         删除指定分类
         """
-        cate = Category.query.filter_by(id=id).first()
+        cate = Category.query.filter_by(id=cate_id).first()
 
         if cate is None:
             return {'status': 1, 'message': 'Category does not exist.'}, 403
