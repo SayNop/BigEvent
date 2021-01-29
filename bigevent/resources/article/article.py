@@ -74,14 +74,14 @@ class ArticleListResource(Resource):
         rp.add_argument('pagesize', type=inputs.int_range(constants.DEFAULT_ARTICLE_PER_PAGE_MIN,
                                                           constants.DEFAULT_ARTICLE_PER_PAGE_MAX, 'per_page'),
                         required=True, location='args')
-        rp.add_argument('cate_id', type=parser.regex(r'\d+'), required=False, location='args')
+        rp.add_argument('cate_id', type=parser.regex(r'\d*'), required=False, location='args')
         rp.add_argument('state', type=parser.article_state, required=False, location='args')
         args = rp.parse_args()
 
         per_page = args.pagesize
         page = args.pagenum
-        cate_id = None if args.cate_id is None else args.cate_id
-        state = None if args.state is None else (Article.STATUS.DRAFT if args.state == '草稿' else
+        cate_id = None if args.cate_id is '' else args.cate_id
+        state = None if args.state is '' else (Article.STATUS.DRAFT if args.state == '草稿' else
                                                  Article.STATUS.APPROVED)
 
         # 判断分类id是否合法
@@ -134,7 +134,7 @@ class ArticleListResource(Resource):
             articles.append({
                 'id': art.id,
                 'title': art.title,
-                'pub_date': art.ctime.strftime('%Y-%m-%d %H:%M:%s')[:-7],
+                'pub_date': art.ctime.strftime('%Y-%m-%d %H:%M:%S.%f')[:-3],
                 'state': '已发布' if art.status == Article.STATUS.APPROVED else '草稿',
                 'cate_name': art.cate.name
             })

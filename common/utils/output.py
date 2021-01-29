@@ -14,10 +14,18 @@ def output_json(data, code, headers=None):
     # 去除系统响应的改造，使flask系统响应保持原状
     if 'status' not in data and 'msg' in data:
         data = {
-            'status':0,
+            'status': 0,
             'message': data.pop('msg'),
             'data': data
         }
+
+    # # 系统响应的改造
+    # msg = data.pop('message')
+    # if not data:
+    #     data = {
+    #         'status': 1,
+    #         'message': msg
+    #     }
 
     settings = current_app.config.get('RESTFUL_JSON', {})
 

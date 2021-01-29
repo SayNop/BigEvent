@@ -39,7 +39,7 @@ class CategoryListResource(Resource):
                 'is_delete': channel.is_delete
             })
 
-        return {'msg': '获取文章分类列表成功！', 'data': results}
+        return {"status": 0, "message": '获取文章分类列表成功！', 'data': results}
 
     def post(self):
         """

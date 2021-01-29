@@ -78,7 +78,7 @@ def article_state(value):
     :param value:
     :return:
     """
-    if value not in ['已发布', '草稿']:
+    if value not in ['已发布', '草稿', '']:
         raise ValueError('{} is not a valid article status'.format(value))
     else:
         return value
